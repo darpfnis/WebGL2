@@ -165,9 +165,14 @@ header p {
 }
 
 .btn-pink, .btn.active {
-  background: var(--pink-soft);
-  border-color: var(--pink);
-  color: var(--pink-deep);
+  background: var(--pink) !important;
+  border-color: var(--pink-btn) !important;
+  color: #fff !important;
+  transform: scale(0.98);
+}
+
+.btn:hover:not(.active) {
+  background: var(--grey-100);
 }
 
 .btn-clear:hover {

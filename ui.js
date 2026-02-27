@@ -1,25 +1,34 @@
 import { MODES } from './input.js';
 
 export function initUI(handler, renderer) {
-  const setupBtn = (id, mode) => {
-    document.getElementById(id).addEventListener('click', (e) => {
-      document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-      e.target.classList.add('active');
-      handler.setMode(mode);
-    });
-  };
+  const btnPoint    = document.getElementById('btn-point');
+  const btnTriangle = document.getElementById('btn-triangle');
+  const btnCircle   = document.getElementById('btn-circle');
+  const btnClear    = document.getElementById('btn-clear');
 
-  setupBtn('btn-point', MODES.POINT);
-  setupBtn('btn-triangle', MODES.TRIANGLE);
-  setupBtn('btn-circle', MODES.CIRCLE);
+  const modeBtns = [btnPoint, btnTriangle, btnCircle];
 
-  document.getElementById('btn-clear').addEventListener('click', () => renderer.clear());
+  function setActiveUI(activeBtn, mode) {
+    modeBtns.forEach(btn => btn.classList.remove('active'));
+    activeBtn.classList.add('active');
+    handler.setMode(mode);
+  }
 
-  document.querySelectorAll('.swatch').forEach(s => {
-    s.addEventListener('click', () => {
-      document.querySelectorAll('.swatch').forEach(sw => sw.classList.remove('active'));
-      s.classList.add('active');
-      handler.setColor(s.dataset.color);
+  btnPoint.addEventListener('click', () => setActiveUI(btnPoint, MODES.POINT));
+  btnTriangle.addEventListener('click', () => setActiveUI(btnTriangle, MODES.TRIANGLE));
+  btnCircle.addEventListener('click', () => setActiveUI(btnCircle, MODES.CIRCLE));
+
+  btnClear.addEventListener('click', () => {
+    renderer.clear();
+    setActiveUI(btnPoint, MODES.POINT);
+  });
+
+  const swatches = document.querySelectorAll('.swatch');
+  swatches.forEach(sw => {
+    sw.addEventListener('click', () => {
+      swatches.forEach(s => s.classList.remove('active'));
+      sw.classList.add('active');
+      handler.setColor(sw.dataset.color);
     });
   });
 }
