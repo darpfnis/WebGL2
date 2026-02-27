@@ -4,7 +4,7 @@ const VS_SRC = `
   attribute vec2 aPosition;
   void main() {
     gl_Position = vec4(aPosition, 0.0, 1.0);
-    gl_PointSize = 8.0;
+    gl_PointSize = 8.0; // Визначаємо розмір точки тут
   }
 `;
 
@@ -12,8 +12,10 @@ const FS_SRC = `
   precision mediump float;
   uniform vec3 uColor;
   void main() {
-    // Малювання круглих точок
-    if (gl_PointSize > 1.0 && length(gl_PointCoord - vec2(0.5)) > 0.5) discard;
+    // gl_PointCoord автоматично доступний при малюванні gl.POINTS
+    // Перевіряємо, чи ми всередині кола (для круглих точок)
+    float dist = distance(gl_PointCoord, vec2(0.5));
+    if (dist > 0.5) discard; 
     gl_FragColor = vec4(uColor, 1.0);
   }
 `;
@@ -56,22 +58,18 @@ export class Renderer {
 
     if (this.vertices.length === 0) return;
 
-    // Малюємо точки окремо
     for (const idx of this.pointIdx) {
       this._drawSinglePrimitive([idx], gl.POINTS);
     }
 
-    // Малюємо трикутники (по 3 вершини)
     for (let i = 0; i < this.triIdx.length; i += 3) {
       this._drawSinglePrimitive(this.triIdx.slice(i, i + 3), gl.TRIANGLES);
     }
 
-    // Малюємо кола
     for (const circ of this.circleGroups) {
       this._drawSinglePrimitive([circ.centerIdx, ...circ.edgeIndices], gl.TRIANGLE_FAN);
     }
 
-    // Тимчасові точки при побудові
     if (this.triPending.length > 0) this._drawSinglePrimitive(this.triPending, gl.POINTS);
   }
 
